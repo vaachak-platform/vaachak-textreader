@@ -37,11 +37,7 @@ jobs:
           ORG_GRADLE_PROJECT_VAACHAK_KEY_PASSWORD: ${{ secrets.VAACHAK_KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
-      # 3. Grab the natively signed APK and rename it
-      - name: Rename Signed APK
-        run: mv app/build/outputs/apk/release/app-release.apk Vaachak-TextReader.apk
-
-      # 4. Publish it to the GitHub Releases page
+      # 3. Publish it to the GitHub Releases page
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
