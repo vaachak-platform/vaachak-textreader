@@ -41,7 +41,7 @@ android {
             val outputImpl = this as? BaseVariantOutputImpl
 
             // This will name it exactly Vaachak-TextReader.apk
-            outputImpl?.outputFileName = "Vaachak-TextReader.apk"
+            //outputImpl?.outputFileName = "Vaachak-TextReader.apk"
 
             // PRO TIP: If you want to tell your local builds apart,
             // you can uncomment the line below instead to get
@@ -71,9 +71,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+
     buildFeatures {
         compose = true
     }
@@ -84,6 +82,11 @@ android {
     }
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
+}
 dependencies {
     // Core Android & Compose
     implementation(libs.androidx.core.ktx)
@@ -97,16 +100,23 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
-    // Unit Testing (Pure JVM)
-    testImplementation(libs.junit)
+    // Google ML Kit Translation
+    implementation("com.google.mlkit:translate:17.0.3")
 
-    // Android UI Testing
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    // Extended Material Icons (for the Clear, Translate, and Settings icons)
+    implementation("androidx.compose.material:material-icons-extended")
 
-    // Debugging tools
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
+// Unit Testing (Pure JVM)
+    testImplementation("junit:junit:4.13.2")
+
+    // Android UI Testing (Explicit strings to guarantee they resolve)
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.02.00"))
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation("org.mockito:mockito-android:5.12.0")
+
+    // Debugging tools for Compose tests
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

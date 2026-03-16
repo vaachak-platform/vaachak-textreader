@@ -5,7 +5,6 @@ on:
     tags:
       - 'v*'
 
-# 1. THE PERMISSIONS FIX: This grants the workflow the right to create a Release
 permissions:
   contents: write
 
@@ -22,6 +21,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: gradle # Added caching here to speed up release builds!
 
       - name: Decode Keystore
         env:
@@ -31,6 +31,10 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # Added the gatekeeper test step here!
+      - name: Run Unit Tests
+        run: ./gradlew testReleaseUnitTest
+
       - name: Build and Sign Release APK
         env:
           ORG_GRADLE_PROJECT_VAACHAK_KEYSTORE_PASSWORD: ${{ secrets.VAACHAK_KEYSTORE_PASSWORD }}
@@ -38,11 +42,9 @@ jobs:
           ORG_GRADLE_PROJECT_VAACHAK_KEY_PASSWORD: ${{ secrets.VAACHAK_KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
-      # 2. THE PATH FIX: List the directory just so we can see what Gradle did in the logs
       - name: Debug Output Directory
         run: ls -la app/build/outputs/apk/release/
 
-      # 3. THE WILDCARD FIX: Grab any .apk file in the folder
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:

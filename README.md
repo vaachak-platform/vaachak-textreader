@@ -1,34 +1,49 @@
-# Vaachak Text Reader (Phase 1) 📱🗣️
+# Vaachak Text Reader 📖
 
-A lightweight, modern Android application built with **Kotlin** and **Jetpack Compose** that allows users to extract text from plain files or their clipboard and reads it aloud using the native Android Text-To-Speech (TTS) engine.
+A professional-grade, open-source Android text-to-speech application built with **Jetpack Compose** and **Google ML Kit**. Vaachak (meaning "Reader" in Sanskrit) focuses on accessibility and seamless on-device translation for major Indian languages.
 
-## ✨ Features
-* **File Reading:** Securely parse `.txt` files using the Android Storage Access Framework (SAF) without requiring intrusive storage permissions.
-* **Clipboard Integration:** Instantly paste text directly from the system clipboard.
-* **Text-to-Speech (TTS):** Read text aloud with system-level TTS integration, complete with play and stop controls.
-* **Modern UI:** Responsive, declarative UI built entirely in Jetpack Compose.
+## ✨ Key Features
+
+- **On-Device Translation:** Powered by Google ML Kit, support for English ➔ Hindi, Bengali, Gujarati, Kannada, Marathi, Tamil, Telugu, and Urdu—completely offline after initial model download.
+- **Advanced TTS Controls:** Real-time adjustment of Speech Rate and Pitch, with the ability to select specific voice variants (Local vs. Cloud).
+- **Modern UI/UX:** Built entirely with Jetpack Compose, featuring an edge-to-edge Material 3 design, automatic dark/light mode, and streamlined controls.
+- **File & Clipboard Integration:** Seamlessly parse local `.txt` files using the Android Storage Access Framework (SAF) or read directly from the system clipboard.
 
 ## 🛠️ Tech Stack & Architecture
 * **Language:** Kotlin
-* **UI Toolkit:** Jetpack Compose (Material Design 3)
-* **Architecture:** Separation of concerns (UI layer vs. Utility logic) for testability.
-* **Testing:** JUnit4 for pure JVM logic tests.
+- **UI Framework:** Jetpack Compose (Material 3)
+- **AI/ML:** Google ML Kit (Natural Language Translation)
+- **CI/CD:** GitHub Actions (Automated build, test, and release signing)
+- **Testing:** JUnit 4, Mockito, and Compose UI Test
 * **Minimum SDK:** 24 (Android 7.0)
 * **Target SDK:** 35 (Android 15)
 
+## 🏗️ Architecture & Best Practices
+
+- **Clean Architecture:** UI logic is decoupled from business logic using extracted Composables and utility classes.
+- **Resource Management:** Safe handling of `InputStream` and memory-efficient `mutableFloatStateOf` for reactive state.
+- **Automated Pipeline:** Every release is automatically built, tested, signed, and published via GitHub Actions.
+
+## 🧪 Testing
+
+The project includes a comprehensive testing suite:
+- **Unit Tests:** Located in `src/test`, verifying core utility logic and locale mapping.
+- **Instrumented Tests:** Located in `src/androidTest`, verifying UI interactions and component states using Compose Rule and Mockito.
+
+To run tests locally:
+```bash
+./gradlew testReleaseUnitTest # Local JVM Tests
+./gradlew connectedAndroidTest # UI Tests (Requires Emulator/Device)
+```
 ## 🚀 Getting Started
 1. Clone the repository: `git clone https://github.com/vaachak-platform/vaachak-textreader`
 2. Open the project in **Android Studio**.
 3. Sync Gradle dependencies.
 4. Run on an emulator or physical device (API 24+).
 
-## 🧪 Running Tests
-Unit tests are included for the core text-parsing utilities to ensure reliability.
-Run `./gradlew test` in your terminal or right-click the `test` directory in Android Studio and select **Run Tests**.
+## 🚀 Installation
 
-## 🔮 Roadmap (Phase 2)
-* Integration of **Google ML Kit** for on-device, offline translation.
-* Supported language pipeline: English ↔ Hindi, English ↔ Gujarati.
+You can download the latest signed APK from the [Releases](https://github.com/vaachak-platform/vaachak-textreader/releases) page.
 
 ## 📝 License
 This project is licensed under the MIT License.
