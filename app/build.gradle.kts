@@ -1,3 +1,6 @@
+
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android") // <-- Remove 'version "2.0.21"' from here
@@ -31,6 +34,21 @@ android {
             useSupportLibrary = true
         }
     }
+    applicationVariants.all {
+        val variantName = this.buildType.name // "debug" or "release"
+
+        outputs.all {
+            val outputImpl = this as? BaseVariantOutputImpl
+
+            // This will name it exactly Vaachak-TextReader.apk
+            outputImpl?.outputFileName = "Vaachak-TextReader.apk"
+
+            // PRO TIP: If you want to tell your local builds apart,
+            // you can uncomment the line below instead to get
+            // Vaachak-TextReader-debug.apk and Vaachak-TextReader-release.apk
+            outputImpl?.outputFileName = "Vaachak-TextReader-${variantName}.apk"
+        }
+    }
     signingConfigs.create("release") {
 
 
@@ -41,6 +59,7 @@ android {
     }
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
