@@ -1,10 +1,13 @@
 name: Vaachak Release Workflow
 
-# Triggers when you push a tag like "v1.0.0"
 on:
   push:
     tags:
       - 'v*'
+
+# 1. THE PERMISSIONS FIX: This grants the workflow the right to create a Release
+permissions:
+  contents: write
 
 jobs:
   build-and-release:
@@ -20,7 +23,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # 1. Recreate the vaachak-key.jks file from a Base64 secret
       - name: Decode Keystore
         env:
           ENCODED_KEYSTORE: ${{ secrets.VAACHAK_KEYSTORE_BASE64 }}
@@ -29,7 +31,6 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # 2. Build the app while passing your environment variables and sign apk
       - name: Build and Sign Release APK
         env:
           ORG_GRADLE_PROJECT_VAACHAK_KEYSTORE_PASSWORD: ${{ secrets.VAACHAK_KEYSTORE_PASSWORD }}
@@ -37,9 +38,13 @@ jobs:
           ORG_GRADLE_PROJECT_VAACHAK_KEY_PASSWORD: ${{ secrets.VAACHAK_KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
-      # 3. Publish it to the GitHub Releases page
+      # 2. THE PATH FIX: List the directory just so we can see what Gradle did in the logs
+      - name: Debug Output Directory
+        run: ls -la app/build/outputs/apk/release/
+
+      # 3. THE WILDCARD FIX: Grab any .apk file in the folder
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-            files: app/build/outputs/apk/release/Vaachak-TextReader.apk
-            generate_release_notes: true
+          files: app/build/outputs/apk/release/*.apk
+          generate_release_notes: true
