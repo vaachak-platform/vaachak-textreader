@@ -46,9 +46,13 @@ object VoiceNameMapper {
         val locale = voice.locale
         val language = locale.getDisplayLanguage(Locale.US)
         val country = locale.getDisplayCountry(Locale.US)
-        val rawName = voice.name.lowercase()
-        val variantId = rawName.split("-").lastOrNull()?.replaceFirstChar { it.uppercase() } ?: "Default"
+
+        // Fix: Strip the redundant suffixes before grabbing the ID
+        val cleanName = voice.name.lowercase().removeSuffix("-local").removeSuffix("-network")
+        val variantId = cleanName.split("-").lastOrNull()?.replaceFirstChar { it.uppercase() } ?: "Default"
+
         val type = if (voice.isNetworkConnectionRequired) "Cloud" else "Local"
+
         return "$language ${if (country.isNotEmpty()) "($country)" else ""} - $variantId ($type)"
     }
 }
