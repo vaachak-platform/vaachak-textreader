@@ -26,51 +26,50 @@
 
 package org.vaachak.textreader
 
+import android.speech.tts.Voice
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.Locale
 
 class TextReaderUtilTest {
 
+    // ---------------------------------------------------------------------------
+    // Stream Parsing Tests
+    // ---------------------------------------------------------------------------
+
     @Test
     fun `readTextFromStream returns correct string from valid stream`() {
-        // Arrange: Create a fake file stream in memory
         val expectedText = "Hello Vaachak\nThis is a unit test."
         val inputStream: InputStream = ByteArrayInputStream(expectedText.toByteArray())
 
-        // Act: Pass it to our utility function
         val result = TextReaderUtil.readTextFromStream(inputStream)
 
-        // Assert: Verify the output matches our expectation
         assertEquals(expectedText, result)
     }
 
     @Test
     fun `readTextFromStream returns error message on null stream`() {
-        // Act
         val result = TextReaderUtil.readTextFromStream(null)
-
-        // Assert
         assertEquals("Error: File stream is null.", result)
     }
 
     @Test
     fun `readTextFromStream handles empty stream gracefully`() {
-        // Arrange
         val inputStream: InputStream = ByteArrayInputStream("".toByteArray())
-
-        // Act
         val result = TextReaderUtil.readTextFromStream(inputStream)
-
-        // Assert
         assertEquals("", result)
     }
 
+    // ---------------------------------------------------------------------------
+    // Language & Locale Tests
+    // ---------------------------------------------------------------------------
+
     @Test
     fun `language tags return correct locale strings`() {
-        // Testing the mapping logic we used in MainActivity
         val hindiLocale = Locale.forLanguageTag("hi-IN")
         val tamilLocale = Locale.forLanguageTag("ta-IN")
         val gujaratiLocale = Locale.forLanguageTag("gu-IN")
@@ -83,14 +82,45 @@ class TextReaderUtilTest {
     }
 
     @Test
-    fun `voice mapper returns human readable name`() {
-        // This is a bit complex to mock fully, so we test the logic
-        // of how we handle Locale display names.
-        val locale = Locale.forLanguageTag("hi-IN")
-        val language = locale.getDisplayLanguage(Locale.US)
-        val country = locale.getDisplayCountry(Locale.US)
+    fun `Lang data class holds correct properties`() {
+        val lang = Lang("Bengali", "bn", "bn-IN")
 
-        assertEquals("Hindi", language)
-        assertEquals("India", country)
+        assertEquals("Bengali", lang.name)
+        assertEquals("bn", lang.code)
+        assertEquals("bn-IN", lang.ttsTag)
+    }
+
+    // ---------------------------------------------------------------------------
+    // Voice Mapper Tests
+    // ---------------------------------------------------------------------------
+
+    @Test
+    fun `voice mapper formats network voice correctly`() {
+        // Arrange: Mock the Android Voice object
+        val mockVoice = mock(Voice::class.java)
+        `when`(mockVoice.locale).thenReturn(Locale.forLanguageTag("hi-IN"))
+        `when`(mockVoice.name).thenReturn("hi-in-x-hie-network")
+        `when`(mockVoice.isNetworkConnectionRequired).thenReturn(true)
+
+        // Act
+        val result = VoiceNameMapper.getFriendlyName(mockVoice)
+
+        // Assert
+        assertEquals("Hindi (India) - Hie (Cloud)", result)
+    }
+
+    @Test
+    fun `voice mapper formats local voice correctly`() {
+        // Arrange
+        val mockVoice = mock(Voice::class.java)
+        `when`(mockVoice.locale).thenReturn(Locale.forLanguageTag("en-AU"))
+        `when`(mockVoice.name).thenReturn("en-au-x-aud-local")
+        `when`(mockVoice.isNetworkConnectionRequired).thenReturn(false)
+
+        // Act
+        val result = VoiceNameMapper.getFriendlyName(mockVoice)
+
+        // Assert
+        assertEquals("English (Australia) - Aud (Local)", result)
     }
 }

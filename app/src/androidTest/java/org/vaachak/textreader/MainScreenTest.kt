@@ -27,12 +27,8 @@
 package org.vaachak.textreader
 
 import android.speech.tts.TextToSpeech
-import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
 import org.junit.Test
@@ -46,7 +42,7 @@ class MainScreenTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun app_displays_main_title_and_empty_text_box_on_launch() {
+    fun app_displays_minimalist_title_and_empty_text_box_on_launch() {
         val mockTts: TextToSpeech = mock(TextToSpeech::class.java)
 
         composeTestRule.setContent {
@@ -57,12 +53,15 @@ class MainScreenTest {
             )
         }
 
-        composeTestRule.onNodeWithText("Vaachak Text Reader").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Text Content").assertIsDisplayed()
+        // Verify the Phase 3 minimalist branding
+        composeTestRule.onNodeWithText("V A A C H A K").assertIsDisplayed()
+
+        // Verify the updated placeholder text exists
+        composeTestRule.onNodeWithText("Scan, paste or upload text...").assertIsDisplayed()
     }
 
     @Test
-    fun typing_text_shows_clear_button_and_clicking_it_clears_text() {
+    fun play_button_is_disabled_initially_and_enables_when_text_is_typed() {
         val mockTts: TextToSpeech = mock(TextToSpeech::class.java)
 
         composeTestRule.setContent {
@@ -73,14 +72,22 @@ class MainScreenTest {
             )
         }
 
-        composeTestRule.onNodeWithText("Text Content").performTextInput("Hello")
-        composeTestRule.onNodeWithText("Hello").assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription("Clear Text").assertIsDisplayed().performClick()
-        composeTestRule.onNodeWithText("Hello").assertDoesNotExist()
+        // Find the Play button by its content description
+        val playButton = composeTestRule.onNodeWithContentDescription("Play")
+
+        // Assert it is disabled when the box is empty
+        playButton.assertIsNotEnabled()
+
+        // Find the text field using its placeholder and type into it
+        composeTestRule.onNodeWithText("Scan, paste or upload text...")
+            .performTextInput("Testing the TTS engine.")
+
+        // Assert the Play button is now enabled
+        playButton.assertIsEnabled()
     }
 
     @Test
-    fun clicking_settings_icon_opens_tts_dialog() {
+    fun clicking_settings_icon_opens_audio_settings_dialog() {
         val mockTts: TextToSpeech = mock(TextToSpeech::class.java)
 
         composeTestRule.setContent {
@@ -91,9 +98,14 @@ class MainScreenTest {
             )
         }
 
-        composeTestRule.onNodeWithText("TTS Settings").assertDoesNotExist()
-        composeTestRule.onNodeWithContentDescription("TTS Settings").performClick()
-        composeTestRule.onNodeWithText("TTS Settings").assertIsDisplayed()
+        // The dialog shouldn't exist yet
+        composeTestRule.onNodeWithText("Audio Settings").assertDoesNotExist()
+
+        // Click the settings icon
+        composeTestRule.onNodeWithContentDescription("Settings").performClick()
+
+        // Verify the Phase 3 dialog appears
+        composeTestRule.onNodeWithText("Audio Settings").assertIsDisplayed()
         composeTestRule.onNodeWithText("Done").assertIsDisplayed()
     }
 }

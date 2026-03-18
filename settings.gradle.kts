@@ -48,5 +48,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "My Application"
+rootProject.name = "VaachakTextReader"
 include(":app")

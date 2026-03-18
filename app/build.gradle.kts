@@ -145,4 +145,19 @@ dependencies {
     // Debugging tools for Compose tests
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // CameraX core library
+    val camerax_version = "1.3.1"
+    implementation("androidx.camera:camera-camera2:$camerax_version")
+    implementation("androidx.camera:camera-lifecycle:$camerax_version")
+    implementation("androidx.camera:camera-view:$camerax_version")
+
+    // ML Kit Text Recognition (OCR)
+    implementation("com.google.mlkit:text-recognition:16.0.0")
+
+    // Accompanist Permissions (to handle Camera permission easily in Compose)
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+
+    implementation("com.google.mlkit:text-recognition:16.0.1") // Latin (English)
+    implementation("com.google.mlkit:text-recognition-devanagari:16.0.1") // Hindi, Marathi, Sanskrit
 }
