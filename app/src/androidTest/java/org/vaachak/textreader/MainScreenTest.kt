@@ -24,6 +24,11 @@
  *
  */
 
+/*
+ * Copyright (c) 2026 Piyush Daiya
+ * ...
+ */
+
 package org.vaachak.textreader
 
 import android.speech.tts.TextToSpeech
@@ -49,41 +54,96 @@ class MainScreenTest {
             MainScreen(
                 ttsEngine = mockTts,
                 isTtsReady = true,
-                onSpeakText = { _, _ -> }
+                isPlaying = false,
+                initialText = "",
+                onSpeakText = { _, _ -> },
+                onStopText = {}
             )
         }
 
-        // Verify the Phase 3 minimalist branding
         composeTestRule.onNodeWithText("V A A C H A K").assertIsDisplayed()
-
-        // Verify the updated placeholder text exists
         composeTestRule.onNodeWithText("Scan, paste or upload text...").assertIsDisplayed()
     }
 
     @Test
-    fun play_button_is_disabled_initially_and_enables_when_text_is_typed() {
+    fun playback_buttons_enable_correctly_when_text_is_typed() {
         val mockTts: TextToSpeech = mock(TextToSpeech::class.java)
 
         composeTestRule.setContent {
             MainScreen(
                 ttsEngine = mockTts,
                 isTtsReady = true,
-                onSpeakText = { _, _ -> }
+                isPlaying = false,
+                initialText = "",
+                onSpeakText = { _, _ -> },
+                onStopText = {}
             )
         }
 
-        // Find the Play button by its content description
         val playButton = composeTestRule.onNodeWithContentDescription("Play")
+        val saveButton = composeTestRule.onNodeWithContentDescription("Export Audio")
+        val stopButton = composeTestRule.onNodeWithContentDescription("Stop")
 
-        // Assert it is disabled when the box is empty
+        // Assert all are disabled when the box is empty
         playButton.assertIsNotEnabled()
+        saveButton.assertIsNotEnabled()
+        stopButton.assertIsNotEnabled() // Disabled because isPlaying is false
 
-        // Find the text field using its placeholder and type into it
+        // Type into the text field
         composeTestRule.onNodeWithText("Scan, paste or upload text...")
             .performTextInput("Testing the TTS engine.")
 
-        // Assert the Play button is now enabled
+        // Assert Play and Save become enabled, Stop remains disabled
         playButton.assertIsEnabled()
+        saveButton.assertIsEnabled()
+        stopButton.assertIsNotEnabled()
+    }
+
+    @Test
+    fun playing_state_disables_play_and_save_and_enables_stop() {
+        val mockTts: TextToSpeech = mock(TextToSpeech::class.java)
+        val testText = "Reading this text out loud."
+
+        composeTestRule.setContent {
+            MainScreen(
+                ttsEngine = mockTts,
+                isTtsReady = true,
+                isPlaying = true, // Simulate that the engine is currently reading
+                initialText = testText,
+                onSpeakText = { _, _ -> },
+                onStopText = {}
+            )
+        }
+
+        // Play and Export should be disabled while playing to prevent overlapping audio/intents
+        composeTestRule.onNodeWithContentDescription("Play").assertIsNotEnabled()
+        composeTestRule.onNodeWithContentDescription("Export Audio").assertIsNotEnabled()
+
+        // Stop should be the ONLY enabled playback control
+        composeTestRule.onNodeWithContentDescription("Stop").assertIsEnabled()
+    }
+
+    @Test
+    fun app_loads_shared_text_from_intent_properly() {
+        val mockTts: TextToSpeech = mock(TextToSpeech::class.java)
+        val sharedIntentText = "This text was shared from a browser!"
+
+        composeTestRule.setContent {
+            MainScreen(
+                ttsEngine = mockTts,
+                isTtsReady = true,
+                isPlaying = false,
+                initialText = sharedIntentText,
+                onSpeakText = { _, _ -> },
+                onStopText = {}
+            )
+        }
+
+        // Verify the text box automatically populates with the shared text
+        composeTestRule.onNodeWithText(sharedIntentText).assertIsDisplayed()
+
+        // The Play button should be enabled immediately
+        composeTestRule.onNodeWithContentDescription("Play").assertIsEnabled()
     }
 
     @Test
@@ -94,17 +154,15 @@ class MainScreenTest {
             MainScreen(
                 ttsEngine = mockTts,
                 isTtsReady = true,
-                onSpeakText = { _, _ -> }
+                isPlaying = false,
+                initialText = "",
+                onSpeakText = { _, _ -> },
+                onStopText = {}
             )
         }
 
-        // The dialog shouldn't exist yet
         composeTestRule.onNodeWithText("Audio Settings").assertDoesNotExist()
-
-        // Click the settings icon
         composeTestRule.onNodeWithContentDescription("Settings").performClick()
-
-        // Verify the Phase 3 dialog appears
         composeTestRule.onNodeWithText("Audio Settings").assertIsDisplayed()
         composeTestRule.onNodeWithText("Done").assertIsDisplayed()
     }

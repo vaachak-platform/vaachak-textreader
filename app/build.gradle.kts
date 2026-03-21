@@ -147,6 +147,8 @@ dependencies {
     // Debugging tools for Compose tests
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    // Required for createComposeRule() to launch its empty testing Activity
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.6.0") // (Use whatever your Compose version is)
 
     // CameraX core library
     val camerax_version = "1.3.1"

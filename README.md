@@ -1,21 +1,39 @@
 # Vaachak Text Reader 📖
 
+[![Android CI](https://img.shields.io/github/actions/workflow/status/vaachak-platform/vaachak-textreader/android.yml?branch=main&label=build&logo=github)](https://github.com/vaachak-platform/vaachak-textreader/actions)
+[![Latest Release](https://img.shields.io/github/v/release/vaachak-platform/vaachak-textreader?logo=github)](https://github.com/vaachak-platform/vaachak-textreader/releases)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0+-blueviolet.svg?logo=kotlin)](https://kotlinlang.org)
+[![Android API](https://img.shields.io/badge/API-24%2B-brightgreen.svg?logo=android)](https://developer.android.com)
+[![License: MIT](https://img.shields.io/github/license/vaachak-platform/vaachak-textreader)](https://opensource.org/licenses/MIT)
+
 A professional-grade, open-source Android text-to-speech (TTS) and optical character recognition (OCR) application. Built with **Jetpack Compose** and **Google ML Kit**, Vaachak focuses on accessibility, seamless on-device translation, and real-time text scanning.
 
-## 🚀 What's New in v1.3.0 (Phase 3: Vision & Refactor)
+## 🚀 What's New in v1.4.0 (System Integration & Audio Export)
 
 ### ✨ Additions
-- **Live Camera OCR:** Integrated Android CameraX with Google ML Kit for real-time text extraction.
-- **Gallery OCR:** Users can now select screenshots or photos from their gallery to extract text.
-- **Devanagari Script Support:** Added a dynamic script toggle allowing the OCR engine to read both Latin (English, Spanish) and Devanagari (Hindi, Marathi) scripts.
-- **Live Magnifier:** Added a 1x-4x zoom slider and pinch-to-zoom support directly in the camera view to help users read small menus or fine print.
-- **Minimalist Adaptive UI:** Upgraded to a system-aware Material 3 design. Heavy text buttons were replaced with a sleek, icon-driven interface that seamlessly transitions between Light and Dark modes.
-- **Google Translate-Style Controls:** Implemented independent source/target translation dropdowns with a quick-swap button and a top-bar OCR language selector.
+- **Deep OS Integration ("Read in Vaachak"):** Vaachak now natively integrates into the Android OS context menu. Highlight text in any app (like Chrome or WhatsApp), tap the three dots, and select "Read in Vaachak" to instantly launch the reader.
+- **Global Share Target:** Added support for `ACTION_SEND` intents, allowing users to send text directly to Vaachak from the standard Android Share sheet.
+- **Audio File Export:** Users can now generate and save high-quality `.wav` audio files of their TTS dictations directly to their device, utilizing the native Android file picker to choose the save destination.
+- **Dynamic Playback UI:** The media controls now react in real-time to the TTS engine state. The Play and Export buttons automatically disable during playback, while the Stop button highlights to provide immediate visual feedback.
+- **Local Text File Parsing:** Fully wired the document picker to allow users to select and load local `.txt` files directly from their device storage.
+
+### 🐛 Fixes & Polish
+- **Voice Label Formatting:** Fixed a string parsing bug in the `VoiceNameMapper` to cleanly display system voice variants without redundant metadata tags.
+- **Robust UI Testing:** Added comprehensive instrumented tests to verify the new dynamic playback button states and intent-handling logic.
+
+---
+
+## ⏪ Previous Release: v1.3.0 (Vision & Refactor)
+
+### ✨ Additions
+- **Live Camera & Gallery OCR:** Real-time text extraction using CameraX, plus the ability to parse text from saved images.
+- **Devanagari Script Support:** Dynamic script toggling allows the OCR engine to read both Latin (English, Spanish) and Devanagari (Hindi, Marathi) scripts.
+- **Live Magnifier:** A 1x-4x zoom slider and pinch-to-zoom support directly in the camera view.
+- **Minimalist Adaptive UI:** Upgraded to an icon-driven, system-aware Material 3 design for seamless Light/Dark mode transitions.
 
 ### 🗑️ Deletions & Cleanup
-- **Pruned Unsupported Languages:** Removed Bengali, Gujarati, Kannada, Tamil, Telugu, and Urdu from the active list to strictly align with what Google ML Kit can support offline.
-- **Removed Bulky UI Elements:** Dropped solid-color default Material buttons in favor of transparent, outlined components for a lighter footprint.
-- **Reduced Cognitive Complexity:** Refactored massive Composable functions into isolated, stateless widgets (`SharedComponents.kt`, `ScannerTopBar`, etc.) for strict Clean Architecture compliance.
+- **Pruned Unsupported Languages:** Removed languages not natively supported by offline ML Kit models to ensure complete offline reliability.
+- **Reduced Cognitive Complexity:** Extracted complex Composables into isolated, stateless widgets for strict Clean Architecture compliance.
 
 ---
 
